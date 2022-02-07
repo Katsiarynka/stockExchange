@@ -1,48 +1,23 @@
 package org.finances;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.Test;
-
 public class OrderBookTest {
 
     @Test
-    public void testHandledOrders_CheckOrdersLists() throws OrderNotHandledException, OrderException {
+    void getOrdersToSell_whenSuccess_thenReturnOrdersToSell() {
         OrderBook orderBook = new OrderBook();
-        orderBook.handle(new Order("S,1,2,12"));
-        assertEquals(orderBook.getOrdersToSell(), "[SELL,1,2$,12/null]");
-        orderBook.handle(new Order("B,2,1,10000,100"));
-        assertEquals(orderBook.getOrdersToSell(), "[SELL,1,2$,12/null]");
-        assertEquals(orderBook.getOrdersToBuy(), "[BUY,2,1$,10000/100]");
-        orderBook.handle(new Order("B,3,2,1000,100"));
-        assertEquals(orderBook.getOrdersToSell(), "[]");
-        assertEquals(orderBook.getOrdersToBuy(), "[BUY,3,2$,988/100, BUY,2,1$,10000/100]");
+        orderBook.handle(new Order(1, true, 1));
+        orderBook.handle(new Order(2, true, 2));
+        orderBook.handle(new Order(3, true, 3));
+        orderBook.handle(new Order(4, false, 4));
+        orderBook.handle(new Order(5, false, 5));
+        orderBook.handle(new Order(6, false, 6));
 
-        orderBook.handle(new Order("S,4,2,100"));
-        assertEquals(orderBook.getOrdersToSell(), "[]");
-        assertEquals(orderBook.getOrdersToBuy(), "[BUY,3,2$,888/100, BUY,2,1$,10000/100]");
-        orderBook.handle(new Order("S,5,2,889,100"));
-        assertEquals(orderBook.getOrdersToSell(), "[SELL,5,2$,1/100]");
-        assertEquals(orderBook.getOrdersToBuy(), "[BUY,2,1$,10000/100]");
+        assertEquals("[1, 2, 3]", orderBook.getOrdersToSell());
     }
 
     @Test
-    public void handle_whenOrderIsValid_thenReturnOrder() {
-        Order order = new Order(1, "A", "B", 100, OrderType.BUY);
+    void getOrdersToSell_whenNull_thenReturnEmptyString() {
         OrderBook orderBook = new OrderBook();
-
-        Order result = orderBook.handle(order);
-
-        assertEquals(order, result);
-    }
-
-    @Test
-    public void handle_whenOrderIsNotHandled_thenThrowOrderNotHandledException() {
-        Order order = new Order(1, "A", "B", 100, OrderType.BUY);
-        orderBook.handle(order);
-
-        assertThatThrownBy(() -> orderBook.handle(order))
-                .isInstanceOf(OrderNotHandledException.class)
-                .hasMessage("Order with id 1 is not handled");
+        assertEquals("", orderBook.getOrdersToSell());
     }
 }
