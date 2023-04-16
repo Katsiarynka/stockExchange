@@ -57,10 +57,6 @@ public class Order {
         return id;
     }
 
-    public boolean isIceberg(){
-        return this.peak != null;
-    }
-
     // validation on arguments, should be extended by every type of it
     public static boolean isValid(String ordeString){
         if (ordeString == null || ordeString.isEmpty()) {

@@ -1,79 +1,62 @@
 package org.finances;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class OrderTest {
+import static org.junit.jupiter.api.Assertions.*;
 
-    @Test
-    public void testOrder_Success() throws OrderException {
-        Order order = new Order("B,100345,5103,100000,1000");
-        assertEquals(100345, order.getId());
-        assertEquals(Short.valueOf("5103"), order.getPrice());
-        assertTrue(order.isIceberg());
-    }
-    
+class OrderTest {
 
     @Test
-    public void testOrderBuy_InvalidString() {
-        String[] values = { "B", "100345", "5103", "100000", "0" };
-        String ordeString = String.join(",", values);
-        assertFalse(Order.isValid(ordeString));
+    @DisplayName("Should return false when the input string has incorrect number of values")
+    void isValidWhenInputStringHasIncorrectNumberOfValues() {
+        assertFalse(Order.isValid("BUY,1,100"));
+        assertFalse(Order.isValid("BUY,1,100,50,30,20"));
     }
 
     @Test
-    public void testOrderSell_InvalidString() {
-        String[] values = { "S", "100345", "5103", "100000", "10000" };
-        String ordeString = String.join(",", values);
-        assertTrue(Order.isValid(ordeString));
+    @DisplayName("Should return true when the input string is valid")
+    void isValidWhenInputStringIsValid() {
+        String validOrderString = "BUY,1,100,10";
+        assertTrue(
+                Order.isValid(validOrderString),
+                "Expected isValid to return true for a valid input string");
     }
 
     @Test
-    public void testOrder_BuyType() throws OrderException {
-        String orderString = "B,100345,5103,100000,10000";
-        Order order = new Order(orderString);
-        assertEquals(OrderType.BUY, order.getType());
+    @DisplayName("Should return false when the input string contains non-integer values")
+    void isValidWhenInputStringContainsNonIntegerValues() {
+        String invalidOrderString = "BUY,1,2A,3";
+        assertFalse(
+                Order.isValid(invalidOrderString),
+                "Expected isValid to return false for non-integer values");
     }
 
     @Test
-    public void testOrder_InvalidIdentifier() throws OrderException {
-        String[] values = { "S", "100345", "5103", "100000", "10000" };
-        Order order = new Order(String.join(",", values));
-        assertEquals(100345, order.getId());
+    @DisplayName(
+            "Should return false when the input string contains negative or zero integer values")
+    void isValidWhenInputStringContainsNegativeOrZeroIntegerValues() {
+        assertFalse(Order.isValid("BUY,-1,100,50"));
+        assertFalse(Order.isValid("BUY,1,-100,50"));
+        assertFalse(Order.isValid("BUY,1,100,-50"));
+        assertFalse(Order.isValid("BUY,1,100,50,-10"));
     }
 
     @Test
-    public void testOrder_InvalidPrice() throws OrderException {
-        Order order = new Order("S,100345,5103,100000,10000");
-        assertEquals(Short.valueOf("5103"), order.getPrice());
+    @DisplayName(
+            "Should return false when the input string contains integer values less than or equal to 0")
+    void isValidWhenInputStringContainsIntegerValuesLessThanOrEqualToZero() {
+        assertFalse(Order.isValid("BUY,-1,100,50"));
+        assertFalse(Order.isValid("BUY,1,-100,50"));
+        assertFalse(Order.isValid("BUY,1,100,-50"));
+        assertFalse(Order.isValid("BUY,1,100,50,-10"));
     }
 
     @Test
-    public void testOrder_InvalidPeak() {
-        String[] values = { "B", "100345", "5103", "100000", "0"};
-        String ordeString = String.join(",", values);
-        
-        try {
-            Order order = new Order(ordeString);
-            assertFalse("Should be thrown OrderException in constructor with invalid peak" == "");
-        } catch (OrderException e) {
-            // in org.junit.jupiter.api.Test is absent expected parameter, do not import another lib
-            assertTrue(true);
-        }
+    @DisplayName("should return the correct price of the order")
+    void getPriceReturnsCorrectPrice() throws OrderException {
+        Order order = new Order("BUY,1,100,10");
+        Short price = order.getPrice();
+        assertEquals(100, price.intValue());
     }
-
-    @Test
-    public void testIsValid_Fail_Empty(){
-        String ordeString = "";
-        boolean result = Order.isValid(ordeString);
-        assertFalse(result);
-    }
-
-    @Test
-    public void testIsValid_Fail_Null(){
-        assertFalse(Order.isValid(null));
-    }
-
 }

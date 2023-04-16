@@ -3,13 +3,13 @@ package org.finances;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class SETSOrderBookExercise 
+public class SETSOrderBook
 {
 
     private static final long WAITING_TIME_FOR_CONSUMER = 2000;
     public static void main(String[] args)
     {
-        final LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
+        final LinkedBlockingQueue<String>   queue = new LinkedBlockingQueue<>();
         // To make its working with custom tests disregarded using Singleton
         // OrderBook orderBook = OrderBook.getInstance();
         OrderBook orderBook = new OrderBook();
